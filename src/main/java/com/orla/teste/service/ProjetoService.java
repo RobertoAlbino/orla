@@ -6,6 +6,10 @@ import com.orla.teste.mapper.ProjetoMapper;
 import com.orla.teste.repository.FuncionarioRepository;
 import com.orla.teste.repository.ProjetoRepository;
 import com.orla.teste.repository.entities.Projeto;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Set;
 
+@Slf4j
 @Service
 public class ProjetoService {
 
@@ -29,20 +35,36 @@ public class ProjetoService {
 
     @Transactional
     public ProjetoDTO criar(ProjetoCriacaoDTO dto) {
-        var funcionarios = new HashSet<>(funcionarioRepository.findAllById(dto.funcionarios()));
-        Projeto entidade = new Projeto(null, dto.nome(), LocalDate.now(), funcionarios);
+        log.info("Iniciando criação de projeto: {}", dto);
+        Set<?> funcionarios = new HashSet<>(funcionarioRepository.findAllById(dto.funcionarios()));
+        log.debug("Funcionários carregados para o projeto {}: {}", dto.nome(), funcionarios);
+        Projeto entidade = new Projeto(null, dto.nome(), LocalDate.now(), (Set) funcionarios);
         entidade.validar();
         entidade = projetoRepository.save(entidade);
-        return projetoMapper.dto(entidade);
+        ProjetoDTO resultado = projetoMapper.dto(entidade);
+        log.info("Projeto criado com sucesso: {}", resultado);
+        return resultado;
     }
 
     public ProjetoDTO buscar(Long id) {
-        return projetoRepository.findById(id).map(projeto -> projetoMapper.dto(projeto))
-                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Projeto não encontrado"));
+        log.info("Buscando projeto com ID: {}", id);
+        ProjetoDTO dto = projetoRepository.findById(id)
+                .map(projetoMapper::dto)
+                .orElseThrow(() -> {
+                    log.error("Projeto não encontrado: ID {}", id);
+                    return new EntityNotFoundException("Projeto não encontrado");
+                });
+        log.info("Projeto encontrado: {}", dto);
+        return dto;
     }
 
     public Page<ProjetoDTO> listar(Pageable pageable) {
-        return projetoRepository.findAll(pageable).map(projeto -> projetoMapper.dto(projeto));
+        log.info("Listando projetos: pagina={}, tamanho={}, ordenação={}",
+                pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
+        Page<ProjetoDTO> page = projetoRepository.findAll(pageable).map(projetoMapper::dto);
+        log.info("Retornados {} projetos (total de {} páginas)",
+                page.getNumberOfElements(), page.getTotalPages());
+        return page;
     }
 
 }
