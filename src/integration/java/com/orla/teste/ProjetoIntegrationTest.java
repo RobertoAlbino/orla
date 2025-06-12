@@ -17,7 +17,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(properties = "spring.flyway.clean-disabled=false")
+@SpringBootTest(properties = "spring.flyway.clean-disabled=false", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Testcontainers
 class ProjetoIntegrationTest {
