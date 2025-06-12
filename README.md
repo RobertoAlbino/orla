@@ -14,7 +14,12 @@ Orla/
 ```
 
 ---
-## Rodando com aplicação + database com Docker
+
+## Dependências do projeto
+* Docker
+---
+
+## Executando com Docker
 
 ```bash
 $ docker compose up
@@ -26,13 +31,18 @@ Os testes de integração utilizam um postgress real usando test containers.
 
 ---
 
+## Logs
+Todos os pontos importantes da aplicação possuem cobertura de logs
+
+---
+
 ## Documentação com OPEN API
 A documentação dos endpoints se encontra em: http://localhost:8080/swagger-ui/index.html#/
 
 ---
 
 ## Integração Contínua (GitHub Actions)
-Este repositório possui um workflow **CI** em `.github/workflows/ci.yml` que executa automaticamente a suíte de testes JUnit 5 em cada push request para a branch `master`.
+Este repositório possui um workflow **CI** em `.github/workflows/ci.yml` que executa automaticamente as suites de teste do projeto para a branch `master`.
 
 
 
