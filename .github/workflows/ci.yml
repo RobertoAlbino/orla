@@ -5,7 +5,7 @@ on:
     branches: [master]
 
 jobs:
-  testes:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -20,6 +20,5 @@ jobs:
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Test
-        run:  mvn -B clean verify
+      - name: Build & Test
+        run: mvn -B clean verify
