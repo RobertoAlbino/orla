@@ -1,0 +1,10 @@
+services:
+
+  orla-database:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: orla
+      POSTGRES_USER: orla
+      POSTGRES_PASSWORD: orla
+    ports:
+      - "5432:5432"
